@@ -22,7 +22,16 @@ lsvc = LinearSVC()
 #进行模型训练
 lsvc.fit(X_train, y_train)
 # 利用训练好的模型对测试样本的数字类别进行预测，预测结果储存在变量y_predict中。
-y_predict = lsvc.predict(X_test)
+lsvc_y_predict = lsvc.predict(X_test)
 print ('The Accuracy of Linear SVC is', lsvc.score(X_test, y_test))
 from sklearn.metrics import classification_report
-print (classification_report(y_test, y_predict, target_names=digits.target_names.astype(str)))
+print (classification_report(y_test, lsvc_y_predict))
+
+from sklearn.ensemble import RandomForestClassifier
+rfc=RandomForestClassifier()
+rfc.fit(X_train,y_train)
+rfc_y_predict=rfc.predict(X_test)
+
+print ('The Accuracy of Random Forest is', lsvc.score(X_test, y_test))
+from sklearn.metrics import classification_report
+print (classification_report(y_test, rfc_y_predict))
