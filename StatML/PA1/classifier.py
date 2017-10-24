@@ -32,6 +32,17 @@ rfc=RandomForestClassifier()
 rfc.fit(X_train,y_train)
 rfc_y_predict=rfc.predict(X_test)
 
-print ('The Accuracy of Random Forest is', lsvc.score(X_test, y_test))
+print ('The Accuracy of Random Forest is', rfc.score(X_test, y_test))
 from sklearn.metrics import classification_report
 print (classification_report(y_test, rfc_y_predict))
+
+from xgboost import XGBClassifier
+xgbc=XGBClassifier()
+xgbc.fit(X_train,y_train)
+xgb_y_pred = xgbc.predict(X_test)
+xgb_predictions = [round(value) for value in xgb_y_pred]
+from sklearn.metrics import accuracy_score
+accuracy = accuracy_score(y_test, xgb_predictions)
+print("The Accuracy of XGBOOST is: %.2f%%" % (accuracy * 100.0))
+print (classification_report(y_test,xgb_predictions))
+
