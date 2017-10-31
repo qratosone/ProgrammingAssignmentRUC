@@ -1,0 +1,11 @@
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\bin\Debug\netcoreapp2.0\subServer.deps.json
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\bin\Debug\netcoreapp2.0\subServer.runtimeconfig.json
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\bin\Debug\netcoreapp2.0\subServer.runtimeconfig.dev.json
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\bin\Debug\netcoreapp2.0\subServer.dll
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\bin\Debug\netcoreapp2.0\subServer.pdb
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\obj\Debug\netcoreapp2.0\subServer.csprojResolveAssemblyReference.cache
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\obj\Debug\netcoreapp2.0\subServer.csproj.CoreCompileInputs.cache
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\obj\Debug\netcoreapp2.0\subServer.AssemblyInfoInputs.cache
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\obj\Debug\netcoreapp2.0\subServer.AssemblyInfo.cs
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\obj\Debug\netcoreapp2.0\subServer.dll
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\subServer\subServer\obj\Debug\netcoreapp2.0\subServer.pdb
