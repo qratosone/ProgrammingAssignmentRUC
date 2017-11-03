@@ -1,0 +1,11 @@
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\bin\Release\netcoreapp2.0\GateWay.deps.json
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\bin\Release\netcoreapp2.0\GateWay.runtimeconfig.json
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\bin\Release\netcoreapp2.0\GateWay.runtimeconfig.dev.json
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\bin\Release\netcoreapp2.0\GateWay.dll
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\bin\Release\netcoreapp2.0\GateWay.pdb
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\obj\Release\netcoreapp2.0\GateWay.csproj.CoreCompileInputs.cache
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\obj\Release\netcoreapp2.0\GateWay.AssemblyInfoInputs.cache
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\obj\Release\netcoreapp2.0\GateWay.AssemblyInfo.cs
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\obj\Release\netcoreapp2.0\GateWay.dll
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\obj\Release\netcoreapp2.0\GateWay.pdb
+D:\GitHub\ProgrammingAssignmentRUC\ADVOS\GateWay\GateWay\obj\Release\netcoreapp2.0\GateWay.csprojResolveAssemblyReference.cache

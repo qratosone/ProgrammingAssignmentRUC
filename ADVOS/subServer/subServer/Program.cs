@@ -58,7 +58,7 @@ namespace subServer
                         client.GetStream().Write(data, 0, data.Length);
                         byte[] buffer = new byte[1024];
                         client.GetStream().Read(buffer, 0, buffer.Length);
-                        message = Encoding.UTF8.GetString(buffer);
+                        message = Encoding.UTF8.GetString(buffer).TrimEnd('\0');
                         Console.WriteLine(message);
                         if (message.StartsWith("getfilelist"))
                         {
@@ -69,7 +69,7 @@ namespace subServer
                             bool got = false;
                             foreach (var item in data_files)
                             {
-                                Console.WriteLine(item.Name+" "+message);
+                                //Console.WriteLine(item.Name+" "+message);
                                 if (message.StartsWith(item.Name))
                                 {
                                     got = true;
@@ -104,6 +104,7 @@ namespace subServer
             }
             data = Encoding.UTF8.GetBytes("finished");
             client.GetStream().Write(data, 0, data.Length);
+
             Console.WriteLine("Closing connection.");
             client.GetStream().Dispose();
             
@@ -113,10 +114,18 @@ namespace subServer
         {
             var sr=item.OpenText();
             string file_data = sr.ReadToEnd();
+            Console.WriteLine("file contents:" + file_data);
             var data = Encoding.UTF8.GetBytes(file_data);
             client.GetStream().Write(data, 0, data.Length);
-            Console.WriteLine("File Sent , Closing connection.");
-            client.GetStream().Dispose();
+            byte[] buffer = new byte[1024];
+            client.GetStream().Read(buffer, 0, buffer.Length);
+            string result = Encoding.UTF8.GetString(buffer);
+            if (result.StartsWith("OK"))
+            {
+                Console.WriteLine("File Sent , Closing connection.");
+                client.GetStream().Dispose();
+            }
+            
         }
         static void Main(string[] args)
         {
