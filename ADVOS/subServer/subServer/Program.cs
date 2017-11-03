@@ -54,7 +54,7 @@ namespace subServer
                         Console.WriteLine("Client connected. Waiting for data.");
                         var client = clientTask.Result;
                         string message = "";
-                        byte[] data = Encoding.UTF8.GetBytes("send request");
+                        byte[] data = Encoding.UTF8.GetBytes("send_request");
                         client.GetStream().Write(data, 0, data.Length);
                         byte[] buffer = new byte[1024];
                         client.GetStream().Read(buffer, 0, buffer.Length);
@@ -62,7 +62,28 @@ namespace subServer
                         Console.WriteLine(message);
                         if (message.StartsWith("getfilelist"))
                         {
-                            SendFileList(client, out message, out data, out buffer);
+                            SendFileList(client,  out data);
+                        }
+                        else
+                        {
+                            bool got = false;
+                            foreach (var item in data_files)
+                            {
+                                Console.WriteLine(item.Name+" "+message);
+                                if (message.StartsWith(item.Name))
+                                {
+                                    got = true;
+                                    SendFileInfo(client, item);
+                                    break;
+                                }
+                            }
+                            if (!got)
+                            {
+                                data= Encoding.UTF8.GetBytes("file_not_found");
+                                client.GetStream().Write(data, 0, data.Length);
+                                Console.WriteLine("Closing connection.");
+                                client.GetStream().Dispose();
+                            }
                         }
                         
                     }
@@ -70,31 +91,32 @@ namespace subServer
                 }
             }
         }
-
-        private static void SendFileList(TcpClient client, out string message, out byte[] data, out byte[] buffer)
+        
+        private static void SendFileList(TcpClient client, out byte[] data)
         {
+            
             foreach (var file in data_files)
             {
                 data = Encoding.UTF8.GetBytes(file.Name);
                 client.GetStream().Write(data, 0, data.Length);
-                buffer = new byte[1024];
+                byte[] buffer = new byte[1024];
                 client.GetStream().Read(buffer, 0, buffer.Length);
             }
             data = Encoding.UTF8.GetBytes("finished");
             client.GetStream().Write(data, 0, data.Length);
-            buffer = new byte[1024];
-            client.GetStream().Read(buffer, 0, buffer.Length);
-            message = Encoding.UTF8.GetString(buffer);
-            if (message.StartsWith("quit"))
-            {
-                Console.WriteLine("Closing connection.");
-                client.GetStream().Dispose();
-            }
+            Console.WriteLine("Closing connection.");
+            client.GetStream().Dispose();
+            
         }
 
-        public static void SendFileInfo()
+        public static void SendFileInfo(TcpClient client,FileInfo item)
         {
-
+            var sr=item.OpenText();
+            string file_data = sr.ReadToEnd();
+            var data = Encoding.UTF8.GetBytes(file_data);
+            client.GetStream().Write(data, 0, data.Length);
+            Console.WriteLine("File Sent , Closing connection.");
+            client.GetStream().Dispose();
         }
         static void Main(string[] args)
         {
@@ -107,7 +129,6 @@ namespace subServer
             port = 1080;
             Server.StartServer();
             Server.Listen(); // Start listening.  
-            
         }
     }
 }
