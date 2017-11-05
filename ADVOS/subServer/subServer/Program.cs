@@ -35,7 +35,13 @@ namespace subServer
         private static bool accept { get; set; } = false;
         public static void StartServer()
         {
-            IPAddress address = IPAddress.Parse("127.0.0.1");
+            Console.WriteLine("input ip address");
+            string addr_str=Console.ReadLine();
+            if (addr_str.Equals(""))
+            {
+                addr_str = "127.0.0.1";
+            }
+            IPAddress address = IPAddress.Parse(addr_str);
             listener = new TcpListener(address, port);
             listener.Start();
             accept = true;
@@ -136,8 +142,16 @@ namespace subServer
             }
             //Console.Read();
             port = 1080;
-            Server.StartServer();
-            Server.Listen(); // Start listening.  
+            try
+            {
+                Server.StartServer();
+                Server.Listen();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+             // Start listening.  
         }
     }
 }

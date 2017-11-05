@@ -164,8 +164,22 @@ namespace GateWay
     {
         static void Main(string[] args)
         {
-            Client file_client = new Client("127.0.0.1", 1080);
-            Server gateway = new Server("127.0.0.1", 80,file_client);
+            string client_addr = "";
+            Console.WriteLine("input file server ip address");
+            client_addr=Console.ReadLine();
+            if (client_addr.Equals(""))
+            {
+                client_addr = "127.0.0.1";
+            }
+            string server_addr = "";
+            Console.WriteLine("input gateway ip address");
+            server_addr = Console.ReadLine();
+            if (server_addr.Equals(""))
+            {
+                server_addr = "127.0.0.1";
+            }
+            Client file_client = new Client(client_addr, 1080);
+            Server gateway = new Server(server_addr, 80,file_client);
 
             Console.WriteLine("filelist got");
             gateway.StartServer();
