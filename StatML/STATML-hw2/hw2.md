@@ -90,3 +90,93 @@ print(accuracy.eval({x: mnist.test.images, y_: mnist.test.labels}))
 ```
 0.9203
 ```
+这个准确率仍然不够高，在实际应用中缺乏价值。因此，接下来将引入更加复杂的模型来提高训练精度。
+
+### 多层感知机(Multilayer Perceptron, MLP)
+Softmax回归模型采用了最简单的两层神经网络，即只有输入层和输出层，因此其拟合能力有限。为了达到更好的识别效果，我们考虑在输入层和输出层中间加上若干个隐藏层。
+
+- 经过第一个隐藏层，可以得到 $ H_1 = \phi(W_1X + b_1) $，其中$\phi$代表激活函数，常见的有sigmoid、tanh或ReLU等函数。
+- 经过第二个隐藏层，可以得到 $ H_2 = \phi(W_2H_1 + b_2) $。
+- 最后，再经过输出层，得到的$Y=\text{softmax}(W_3H_2 + b_3)$，即为最后的分类结果向量。
+
+
+下图为多层感知器的网络结构图，图中权重用蓝线表示、偏置用红线表示、+1代表偏置参数的系数为1。
+
+![](http://paddlepaddle.org/docs/develop/book/02.recognize_digits/image/mlp.png)
+
+配图来自百度PaddlePaddle官方教程
+
+
+```python
+in_units = 784
+h1_units = 300
+W1 = tf.Variable(tf.truncated_normal([in_units, h1_units], stddev=0.1))
+b1 = tf.Variable(tf.zeros([h1_units]))
+W2 = tf.Variable(tf.zeros([h1_units, 10]))
+b2 = tf.Variable(tf.zeros([10]))
+```
+in_units 表示输入节点数，h1_units 表示隐含层输出节点数，设置为300。W1，b1是隐含层的权重和偏置，此处将偏置全都设置为0，并将权重初始化为截断的正态分布，标准差为0.1,。
+
+模型使用ReLU作为激活函数，为此需要使用正态分布给参数加噪声，以打破完全对称。
+
+对于最后输出层的Softmax，直接将W2和b2全赋值为0即可。
+
+多层感知机相当于在Softmax的基础上加上隐含层，接下来我们将定义模型结构：
+
+```python
+hidden1 = tf.nn.relu(tf.matmul(x, W1) + b1)
+hidden1_drop = tf.nn.dropout(hidden1, keep_prob)
+y = tf.nn.softmax(tf.matmul(hidden1_drop, W2) + b2)
+```
+hidden1 是一个隐含层，使用ReLU作为激活函数，计算公式$y=relu(W_1x+b_1)$。接下来使用Dropout功能，随机将一部分节点置为0，这里的keep_prob参数即为保留数据而不置为0的比例，在训练时应当小鱼1，防止过拟合；在预测时应当等于1，即使用全部特征来进行预测。
+最后是输出层，同样使用softmax，与之前一部分内容一致。
+
+损失函数仍然使用交叉熵，而优化函数选择自适应优化其Adagrad，学习速率设置为0.3
+```python
+y_ = tf.placeholder(tf.float32, [None, 10])
+cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+train_step = tf.train.AdagradOptimizer(0.3).minimize(cross_entropy)
+```
+
+全部代码如下所示：
+```python
+# Create the model
+from tensorflow.examples.tutorials.mnist import input_data
+import tensorflow as tf
+mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+sess = tf.InteractiveSession()
+
+in_units = 784
+h1_units = 300
+W1 = tf.Variable(tf.truncated_normal([in_units, h1_units], stddev=0.1))
+b1 = tf.Variable(tf.zeros([h1_units]))
+W2 = tf.Variable(tf.zeros([h1_units, 10]))
+b2 = tf.Variable(tf.zeros([10]))
+
+x = tf.placeholder(tf.float32, [None, in_units])
+keep_prob = tf.placeholder(tf.float32)
+
+hidden1 = tf.nn.relu(tf.matmul(x, W1) + b1)
+hidden1_drop = tf.nn.dropout(hidden1, keep_prob)
+y = tf.nn.softmax(tf.matmul(hidden1_drop, W2) + b2)
+
+# Define loss and optimizer
+y_ = tf.placeholder(tf.float32, [None, 10])
+cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+train_step = tf.train.AdagradOptimizer(0.3).minimize(cross_entropy)
+
+# Train
+tf.global_variables_initializer().run()
+for i in range(3000):
+  batch_xs, batch_ys = mnist.train.next_batch(100)
+  train_step.run({x: batch_xs, y_: batch_ys, keep_prob: 0.75})
+
+# Test trained model
+correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+print(accuracy.eval({x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+```
+最后可以得到训练精度：
+```
+0.981
+```
