@@ -292,4 +292,59 @@ h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 h_pool2 = max_pool_2x2(h_conv2)
 ```
 
-经过两次最大池化之后，
+经过两次最大池化之后，进入全连接层——经过两次步长2X2池化之后，边长变成原来的1/4，图片尺寸变成7X7，卷积层卷积核总数64个，输出tensor尺寸为7 * 7 * 64。将其转换为一维向量，然后连接一个全连接层，使用ReLU激活函数：
+```python
+W_fc1 = weight_variable([7 * 7 * 64, 1024])
+b_fc1 = bias_variable([1024])
+h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
+h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
+```
+
+下面使用一个Dropout层以减轻过拟合——训练时随机丢弃一部分数据，预测时则保留所有数据，以追求最佳预测性能：
+```python
+keep_prob = tf.placeholder(tf.float32)
+h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+```
+最后将Dropout层的输出连接Softmax层，得到概率输出：
+```python
+W_fc2 = weight_variable([1024, 10])
+b_fc2 = bias_variable([10])
+y_conv=tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
+```
+
+跟之前一样仍然使用交叉熵定义损失函数，开始训练并输出预测结果：
+```python
+cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y_conv), reduction_indices=[1]))
+train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+
+correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+tf.global_variables_initializer().run()
+for i in range(20000):
+  batch = mnist.train.next_batch(50)
+  if i%100 == 0:
+    train_accuracy = accuracy.eval(feed_dict={
+        x:batch[0], y_: batch[1], keep_prob: 1.0})
+    print("step %d, training accuracy %g"%(i, train_accuracy))
+  train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+
+print("test accuracy %g"%accuracy.eval(feed_dict={
+    x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+```
+
+
+使用NVIDIA GeForce GTX1060 6GB 进行训练，输出结果如下所示：
+```
+step 0, training accuracy 0.06
+step 100, training accuracy 0.92
+step 200, training accuracy 0.92
+step 300, training accuracy 0.86
+step 400, training accuracy 0.96
+...
+step 19700, training accuracy 1
+step 19800, training accuracy 1
+step 19900, training accuracy 1
+2017-12-18 02:16:16.281809: W C:\tf_jenkins\home\workspace\rel-win\M\windows-gpu\PY\36\tensorflow\core\common_runtime\bfc_allocator.cc:217] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.59GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory is available.
+test accuracy 0.9917
+
+```
